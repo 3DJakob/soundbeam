@@ -1,0 +1,28 @@
+h1, h2, h3, p, a {
+  color: #fff;
+  font-family: 'Varela Round', sans-serif;
+}
+
+input, button {
+  padding: 10px;
+  border: none;
+  background-color: rgba(255, 255, 255, 0.8);
+
+}
+
+button {
+
+}
+
+div {
+  display: flex;
+  flex: 1;
+}
+
+* {
+  outline: none;
+}
+
+.row {
+  flex-direction: row;
+}
