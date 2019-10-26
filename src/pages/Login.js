@@ -1,13 +1,15 @@
-import React, {useRef, useState} from 'react';
-import logo from '../img/SoundBeam-white.svg';
-import '../css/Login.css';
+import React, { useRef, useState } from 'react'
+import logo from '../img/SoundBeam-white.svg'
+import '../css/Login.css'
 
 // this comment tells babel to convert jsx to calls to a function called jsx instead of React.createElement
 /** @jsx jsx */
-import { jsx, keyframes, css } from '@emotion/core'
+import { jsx } from '@emotion/core'
 import InputWithButton from '../pages/Assets'
 
-function LoginPage() {
+const { ipcRenderer } = window.require('electron')
+
+function LoginPage () {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showUsernameButton, setShowUsernameButton] = useState(true)
@@ -22,7 +24,8 @@ function LoginPage() {
   }
 
   const updatePassword = (password) => {
-    console.log(password)
+    const data = JSON.stringify({ email: email, password: password })
+    ipcRenderer.send('login', data)
   }
 
   const emailInputClick = (e) => {
@@ -32,15 +35,13 @@ function LoginPage() {
     }
   }
 
-
-
   return (
-    <div className="PageLogin">
-      <div className="GradientOverlay">
-        <img src={logo} className="App-logo" alt="logo" />
+    <div className='PageLogin'>
+      <div className='GradientOverlay'>
+        <img src={logo} className='App-logo' alt='logo' />
         <p>Log in with your existing SoundCloud account.</p>
-        <InputWithButton onClick={emailInputClick} onClick={emailInputClick} callback={updateEmail} showButton={showUsernameButton} placeholder={'email'}/>
-        <InputWithButton callback={updatePassword} show={showPasswordInput} password email={email} inputRef={passwordRef}/>
+        <InputWithButton onClick={emailInputClick} callback={updateEmail} showButton={showUsernameButton} placeholder='email' />
+        <InputWithButton callback={updatePassword} show={showPasswordInput} password email={email} inputRef={passwordRef} />
         {/* <PasswordComponent password={true} inputRef={passwordRef} email={email} /> */}
         {/* <p css={css`
       padding: 32px;
@@ -56,7 +57,7 @@ function LoginPage() {
         {/* <p>Don't have an account? <a onClick={shell.openExternal('google.se')}> Click here </a></p> */}
       </div>
     </div>
-    )
-  }
+  )
+}
 
-  export default LoginPage
+export default LoginPage
