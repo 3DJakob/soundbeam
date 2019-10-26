@@ -1,10 +1,12 @@
 .PageLogin {
+    flex: 1;
     min-height: 100vh;
     background-image: url(../img/guitar-bg.jpeg);
     background-size: cover;
 }
 
 .PageLogin .GradientOverlay {
+    flex: 1;
     position: absolute;
     right: 0; left: 0; top: 0; bottom: 0;
     background-image: url(../img/gradient-orange.svg);

@@ -8,7 +8,7 @@ import LoginPage from './pages/Login';
 
 function App() {
   return (
-    <div>
+    <div style={{flex: 1}}>
       <link href="https://fonts.googleapis.com/css?family=Varela+Round&display=swap" rel="stylesheet"></link>
       <LoginPage></LoginPage>
     </div>

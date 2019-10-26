@@ -1,43 +1,58 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import logo from '../img/SoundBeam-white.svg';
 import '../css/Login.css';
 
-// import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-// import { faAngleRight } from '@fortawesome/free-solid-svg-icons'
-
+// this comment tells babel to convert jsx to calls to a function called jsx instead of React.createElement
+/** @jsx jsx */
+import { jsx, keyframes, css } from '@emotion/core'
 import InputWithButton from '../pages/Assets'
-// const electronOpenLinkInBrowser = require("electron-open-link-in-browser")
 
 function LoginPage() {
-  const [email = '', setEmail] = useState({})
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [showUsernameButton, setShowUsernameButton] = useState(true)
+  const [showPasswordInput, setShowPasswordInput] = useState(false)
+  const passwordRef = useRef()
 
   const updateEmail = (email) => {
-    console.log(email)
     setEmail(email)
+    setShowUsernameButton(false)
+    passwordRef.current.focus()
+    setShowPasswordInput(true)
   }
 
   const updatePassword = (password) => {
-
+    console.log(password)
   }
 
-  const PasswordComponent = () => {
-    if (Object.keys(email).length !== 0) {
-      return (
-        <InputWithButton callback={updatePassword} placeholder={'password'}></InputWithButton>
-      )
+  const emailInputClick = (e) => {
+    if (showUsernameButton === false) {
+      setShowUsernameButton(true)
+      setShowPasswordInput(false)
     }
-    return (null)
   }
- 
+
+
+
   return (
     <div className="PageLogin">
       <div className="GradientOverlay">
         <img src={logo} className="App-logo" alt="logo" />
         <p>Log in with your existing SoundCloud account.</p>
-        <InputWithButton callback={updateEmail} placeholder={'email'}></InputWithButton>
-
-        <PasswordComponent></PasswordComponent>
-
+        <InputWithButton onClick={emailInputClick} onClick={emailInputClick} callback={updateEmail} showButton={showUsernameButton} placeholder={'email'}/>
+        <InputWithButton callback={updatePassword} show={showPasswordInput} password email={email} inputRef={passwordRef}/>
+        {/* <PasswordComponent password={true} inputRef={passwordRef} email={email} /> */}
+        {/* <p css={css`
+      padding: 32px;
+      background-color: hotpink;
+      font-size: 24px;
+      border-radius: 4px;
+      transition: 200ms;
+      &:hover {
+        color: red;
+        transform: scale(1.1);
+      }
+    `}>TEST</p> */}
         {/* <p>Don't have an account? <a onClick={shell.openExternal('google.se')}> Click here </a></p> */}
       </div>
     </div>
