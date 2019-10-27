@@ -15,10 +15,9 @@ function createWindow() {
     // Create the browser window.
     mainWindow = new BrowserWindow({
         width: 800, height: 600,
+        titleBarStyle: 'hiddenInset',
         webPreferences: {
-            webSecurity: false
-        },
-        webPreferences: {
+            webSecurity: false,
             webviewTag: true
         }
     })

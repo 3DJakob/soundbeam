@@ -12,18 +12,37 @@ import ky from 'ky'
 import { jsx, keyframes, css } from '@emotion/core'
 import InputWithButton from '../pages/Assets'
 
-const connectStyle = {
-  display: 'flex',
-  borderRadius: 4,
-  height: 20
+const getLikes = () => {
+  (async () => {
+    const parsed = await ky.get('https://api-v2.soundcloud.com/users/28072597/track_likes?client_id=1SoBYKkeYLyQsSAiFMTGD0dc0ShJDKUf&limit=10&offset=0&linked_partitioning=1&app_version=1571932339&app_locale=en').json()
+    const titles = parsed.collection.map(trackObj => {
+      return trackObj.track.title
+    })
+  })();
 }
 
-function LoginWindow (props) {
+function LoginWindow ({onUserLoggedIn, show}) {
   let style
-  if (props.show) {
+  if (show) {
     style = {display: 'flex', animation: 'fade 600ms',}
   } else {
     style = {display: 'none'}
+  }
+
+  const getHTML = (webview) => {
+    return new Promise((resolve) => {
+      webview.executeJavaScript(`(function () {
+        const html = document.body.innerHTML
+        return html
+      }())`, false, resolve)
+    })
+  }
+
+  const getUserInfoObject = (html) => {
+    let userInfo = html.split('catch(t){}})},')[1]
+    userInfo = userInfo.split(');</script>')[0]
+    const userInfoObject = JSON.parse(userInfo)[4].data[0]
+    return userInfoObject
   }
 
   const webviewRef = useCallback(node => {
@@ -31,6 +50,14 @@ function LoginWindow (props) {
       node.addEventListener('dom-ready', () => {
         node.scrollTo(0,0);
         node.insertCSS('body{padding-bottom: 0 !important;} header{display: none !important;} .l-container.l-content{width: 100% !important; padding: 0 !important;} .l-signin .l-content{height: auto !important;} .l-footer{display:none !important;}')
+        node.addEventListener('did-stop-loading', async () => {
+          if (node.getURL() === 'https://soundcloud.com/discover') {
+            console.log('User logged in!')
+            const html = await getHTML(node)
+            const user = getUserInfoObject(html)
+            onUserLoggedIn(user)
+          }
+        })
       })
     }
   }, []);
@@ -60,7 +87,7 @@ function XButton ({callback, show}) {
   )
 }
 
-function LoginPage () {
+function LoginPage ({onLoggedInCompleted}) {
   const [showWebview, setShowWebview] = useState(false)
   const openLoginWindow = () => {
     setShowWebview(true)
@@ -68,6 +95,7 @@ function LoginPage () {
 
   const xClick = () => {
     setShowWebview(false)
+    getLikes()
   }
 
   return (
@@ -78,20 +106,8 @@ function LoginPage () {
 
         <a onClick={openLoginWindow} className='connectBtn'><img src={whiteCloud}></img><p>Connect</p></a>
 
-        <LoginWindow show={showWebview}></LoginWindow>
+        <LoginWindow onUserLoggedIn={onLoggedInCompleted} show={showWebview}></LoginWindow>
         <XButton callback={xClick} show={showWebview}></XButton>
-        {/* <PasswordComponent password={true} inputRef={passwordRef} email={email} /> */}
-        {/* <p css={css`
-      padding: 32px;
-      background-color: hotpink;
-      font-size: 24px;
-      border-radius: 4px;
-      transition: 200ms;
-      &:hover {
-        color: red;
-        transform: scale(1.1);
-      }
-    `}>TEST</p> */}
       </div>
     </div>
   )
