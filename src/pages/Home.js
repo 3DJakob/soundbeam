@@ -1,4 +1,5 @@
 import React from 'react'
+import {useState, useCallback} from 'react'
 import ky from 'ky'
 import usePromise from 'react-use-promise'
 import '../css/Home.css'
@@ -10,12 +11,58 @@ const getLikes = async (userId) => {
 	return parsed.collection.map(row => row)
 }
 
+function Player ({trackInfo, debug}) {
+	const [visible, setVisible] = useState(false)
+
+	const webviewRef = useCallback(node => {
+    if (node !== null) {
+      node.addEventListener('dom-ready', async () => {
+				setVisible(await pressPlay(node))
+      })
+    }
+	}, []);
+
+	const style = visible ? {height: 50, position: 'absolute', bottom: 0, width: '100vw'} : {opacity: 0}
+
+	return (
+		<webview style={style} ref={webviewRef} src={trackInfo.track.permalink_url}>
+
+		</webview>
+	)
+}
+
+const pressPlay = (webview) => {
+	return new Promise((resolve) => {
+		webview.executeJavaScript(`(function () {
+			const pauseElement = document.querySelector('.sc-button-play.sc-button-pause')
+			if (pauseElement) {
+
+			} else {
+				const playElement = document.querySelector('.sc-button-play')
+				playElement.click()
+			}
+
+			const playControls = document.querySelector('.playControls')
+
+			document.body.innerHTML = ''
+			document.body.appendChild(playControls)
+
+			return true
+		}())`, false, resolve)
+	})
+}
+
 function HomePage ({user}) {
+	const [playingTrack, setPlayingTrack] = useState()
 	const [likes] = usePromise(() => getLikes(user.id), [user.id])
+	const onTrackedClicked = (trackInfo) => {
+		setPlayingTrack(trackInfo)
+	}
 
 	return (
 		<div className='PageHome'>
-			{likes ? <PlayList playlist={likes}></PlayList> : 'loading...'}
+			{likes ? <PlayList onTrackedClicked={onTrackedClicked} playlist={likes}></PlayList> : 'loading...'}
+			{playingTrack ? <Player debug={true} trackInfo={playingTrack}></Player> : ''}
 		</div>
 	)
 }
