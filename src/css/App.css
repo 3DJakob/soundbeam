@@ -1,4 +1,4 @@
-h1, h2, h3, p, a {
+h1, h2, h3, p, a, div {
   color: #fff;
   font-family: 'Varela Round', sans-serif;
 }
@@ -24,4 +24,50 @@ div {
 
 .row {
   flex-direction: row;
+}
+
+.playlist {
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+}
+
+.playlist .track {
+  padding: 10px;
+  transition: 200ms;
+  cursor: pointer;
+}
+
+.playlist .track:hover {
+  background-color: rgba(255, 255, 255, 0.2);
+  transform: scale(1.01);
+}
+
+.playlist .track > * {
+  margin: 0 10px;
+}
+
+.playlist .track > p:first-of-type {
+  color: #ccc;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.playlist .track > p:nth-last-of-type(2) {
+  flex-grow: 1;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.playlist .blurredBg {
+  z-index: -10;
+  position: absolute;
+  left: -20px;
+  right: -20px;
+  top: -20px;
+  bottom: -20px;
+  background-size: cover;
+  filter: blur(10px);
+  background-position: center;
 }
