@@ -3,12 +3,11 @@ import millify from 'millify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart } from '@fortawesome/free-solid-svg-icons'
 
-
-function Track ({trackInfo}) {
-    console.log(trackInfo)
+function Track ({trackInfo, onTrackClicked}) {
     const count = millify(trackInfo.track.playback_count)
+
     return (
-        <div className='track'>
+        <div className='track' onClick={() => onTrackClicked(trackInfo)}>
             <p>{trackInfo.track.user.username}</p>
             <p>{trackInfo.track.title}</p>
             <p>{count}</p>
@@ -17,13 +16,11 @@ function Track ({trackInfo}) {
     )
 }
 
-function PlayList ({playlist}) {
-    // console.log(playlist[0].artwork_url)
-    console.log(playlist)
+function PlayList ({playlist, onTrackedClicked}) {
 
     return (
         <div className='playlist'>
-            {playlist.map(trackInfo => <Track key={trackInfo.track.id} trackInfo={trackInfo} />)}
+            {playlist.map(trackInfo => <Track onTrackClicked={onTrackedClicked} key={trackInfo.track.id} trackInfo={trackInfo} />)}
             <div className='blurredBg' style={{backgroundImage: `url(${playlist[2].track.artwork_url})`}}></div>
         </div>
     )
