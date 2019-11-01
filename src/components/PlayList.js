@@ -1,13 +1,20 @@
 import React from 'react'
+import {useState} from 'react'
 import millify from 'millify'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faHeart } from '@fortawesome/free-solid-svg-icons'
+import CoverArt from '../components/CoverArt'
+import getHighResArtworkURL from '../lib/utils'
 
 function Track ({trackInfo, onTrackClicked}) {
     const count = millify(trackInfo.track.playback_count)
 
+    const trackClick = () => {
+        onTrackClicked(trackInfo)
+    }
+
     return (
-        <div className='track' onClick={() => onTrackClicked(trackInfo)}>
+        <div className='track' onClick={trackClick}>
             <p>{trackInfo.track.user.username}</p>
             <p>{trackInfo.track.title}</p>
             <p>{count}</p>
@@ -16,12 +23,24 @@ function Track ({trackInfo, onTrackClicked}) {
     )
 }
 
-function PlayList ({playlist, onTrackedClicked}) {
+function PlayList ({nowPlaying, playlist, onTrackClicked}) {
+    if (nowPlaying === undefined) {
+        nowPlaying = playlist[0]
+    }
+
+    const trackClick = (trackInfo) => {
+        onTrackClicked(trackInfo)
+    }
 
     return (
         <div className='playlist'>
-            {playlist.map(trackInfo => <Track onTrackClicked={onTrackedClicked} key={trackInfo.track.id} trackInfo={trackInfo} />)}
-            <div className='blurredBg' style={{backgroundImage: `url(${playlist[2].track.artwork_url})`}}></div>
+            <CoverArt trackInfo={nowPlaying}></CoverArt>
+
+            <div className='trackList'>
+                {playlist.map(trackInfo => <Track onTrackClicked={trackClick} key={trackInfo.track.id} trackInfo={trackInfo} />)}
+            </div>
+            <div className='blurredBg' style={{backgroundImage: `url(${getHighResArtworkURL(nowPlaying)})`}}></div>
+
         </div>
     )
 }

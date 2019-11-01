@@ -9,10 +9,6 @@ input, button {
   background-color: rgba(255, 255, 255, 0.8);
 }
 
-button {
-
-}
-
 div {
   display: flex;
   /* flex: 1; */
@@ -27,9 +23,18 @@ div {
 }
 
 .playlist {
+  position: relative;
+  overflow: hidden;
+  height: 340px;
+  width: 100%;
+}
+
+.playlist .trackList {
   flex-direction: column;
   position: relative;
   overflow: hidden;
+  overflow-y: scroll;
+  width: 100%;
 }
 
 .playlist .track {
@@ -70,4 +75,16 @@ div {
   background-size: cover;
   filter: blur(10px);
   background-position: center;
+  transition: 500ms;
+}
+
+ .playlist .blurredBg::before {
+  content: '';
+  background-color: #000;
+  opacity: 0.2;
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
 }

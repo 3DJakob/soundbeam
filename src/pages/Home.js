@@ -1,5 +1,4 @@
-import React from 'react'
-import {useState, useCallback} from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import ky from 'ky'
 import usePromise from 'react-use-promise'
 import '../css/Home.css'
@@ -14,6 +13,8 @@ const getLikes = async (userId) => {
 function Player ({trackInfo, debug}) {
 	const [visible, setVisible] = useState(false)
 
+	useEffect(() => setVisible(false), [trackInfo])
+
 	const webviewRef = useCallback(node => {
     if (node !== null) {
       node.addEventListener('dom-ready', async () => {
@@ -25,7 +26,7 @@ function Player ({trackInfo, debug}) {
 	const style = visible ? {height: 50, position: 'absolute', bottom: 0, width: '100vw'} : {opacity: 0}
 
 	return (
-		<webview style={style} ref={webviewRef} src={trackInfo.track.permalink_url}>
+		<webview style={style} ref={webviewRef} webpreferences='images=no' src={trackInfo.track.permalink_url}>
 
 		</webview>
 	)
@@ -35,9 +36,7 @@ const pressPlay = (webview) => {
 	return new Promise((resolve) => {
 		webview.executeJavaScript(`(function () {
 			const pauseElement = document.querySelector('.sc-button-play.sc-button-pause')
-			if (pauseElement) {
-
-			} else {
+			if (!pauseElement) {
 				const playElement = document.querySelector('.sc-button-play')
 				playElement.click()
 			}
@@ -53,16 +52,16 @@ const pressPlay = (webview) => {
 }
 
 function HomePage ({user}) {
-	const [playingTrack, setPlayingTrack] = useState()
+	const [nowPlaying, setNowPlaying] = useState()
 	const [likes] = usePromise(() => getLikes(user.id), [user.id])
-	const onTrackedClicked = (trackInfo) => {
-		setPlayingTrack(trackInfo)
+	const onTrackClicked = (trackInfo) => {
+		setNowPlaying(trackInfo)
 	}
 
 	return (
 		<div className='PageHome'>
-			{likes ? <PlayList onTrackedClicked={onTrackedClicked} playlist={likes}></PlayList> : 'loading...'}
-			{playingTrack ? <Player debug={true} trackInfo={playingTrack}></Player> : ''}
+			{likes ? <PlayList nowPlaying={nowPlaying} onTrackClicked={onTrackClicked} playlist={likes}></PlayList> : 'loading...'}
+			{/* {nowPlaying ? <Player debug={true} trackInfo={nowPlaying}></Player> : ''} */}
 		</div>
 	)
 }
