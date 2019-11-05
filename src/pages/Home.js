@@ -10,57 +10,20 @@ const getLikes = async (userId) => {
 	return parsed.collection.map(row => row)
 }
 
-function Player ({trackInfo, debug}) {
-	const [visible, setVisible] = useState(false)
-
-	useEffect(() => setVisible(false), [trackInfo])
-
-	const webviewRef = useCallback(node => {
-    if (node !== null) {
-      node.addEventListener('dom-ready', async () => {
-				setVisible(await pressPlay(node))
-      })
-    }
-	}, []);
-
-	const style = visible ? {height: 50, position: 'absolute', bottom: 0, width: '100vw'} : {opacity: 0}
-
-	return (
-		<webview style={style} ref={webviewRef} webpreferences='images=no' src={trackInfo.track.permalink_url}>
-
-		</webview>
-	)
-}
-
-const pressPlay = (webview) => {
-	return new Promise((resolve) => {
-		webview.executeJavaScript(`(function () {
-			const pauseElement = document.querySelector('.sc-button-play.sc-button-pause')
-			if (!pauseElement) {
-				const playElement = document.querySelector('.sc-button-play')
-				playElement.click()
-			}
-
-			const playControls = document.querySelector('.playControls')
-
-			document.body.innerHTML = ''
-			document.body.appendChild(playControls)
-
-			return true
-		}())`, false, resolve)
-	})
-}
-
 function HomePage ({user}) {
 	const [nowPlaying, setNowPlaying] = useState()
+
+	const [likeNowPlaying, setLikeNowPlaying] = useState()
+
 	const [likes] = usePromise(() => getLikes(user.id), [user.id])
-	const onTrackClicked = (trackInfo) => {
-		setNowPlaying(trackInfo)
+	const onLikeTrackClicked = (clicked) => {
+		setLikeNowPlaying(clicked)
+		setNowPlaying(clicked)
 	}
 
 	return (
 		<div className='PageHome'>
-			{likes ? <PlayList nowPlaying={nowPlaying} onTrackClicked={onTrackClicked} playlist={likes}></PlayList> : 'loading...'}
+			{likes ? <PlayList nowPlaying={likeNowPlaying} onTrackClicked={onLikeTrackClicked} playlist={likes} url='https://soundcloud.com/you/likes'></PlayList> : 'loading...'}
 			{/* {nowPlaying ? <Player debug={true} trackInfo={nowPlaying}></Player> : ''} */}
 		</div>
 	)
